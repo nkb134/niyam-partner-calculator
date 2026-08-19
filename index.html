@@ -277,7 +277,7 @@
             <div class="field">
               <label for="comm">Your commission share</label>
               <div class="inputline">
-                <input type="number" id="comm" value="20" min="0" max="100" step="1">
+                <input type="number" id="comm" value="30" min="0" max="100" step="1">
                 <span class="affix suf">%</span>
               </div>
               <div class="hint">Share of gross fees your traders generate, before their discount.</div>
@@ -316,7 +316,7 @@
         <span class="val" id="o_gross">—</span>
       </div>
       <div class="row total">
-        <span class="lbl">Your commission<br><small style="font-weight:400;color:var(--dim)" id="o_commlbl">20% of gross fees</small></span>
+        <span class="lbl">Your commission<br><small style="font-weight:400;color:var(--dim)" id="o_commlbl">30% of gross fees</small></span>
         <span class="val" id="o_comm">—</span>
       </div>
 
@@ -379,7 +379,7 @@
     base:{active:60,trades:20,lev:10,util:60},
     act :{active:70,trades:40,lev:15,util:70}
   };
-  var DEFAULTS={active:60,trades:20,lev:10,util:60,bps:4,disc:10,comm:20};
+  var DEFAULTS={active:60,trades:20,lev:10,util:60,bps:4,disc:10,comm:30};
 
   function n(id){var v=parseFloat(el[id].value); return isFinite(v)?v:0;}
   function inr(v){ if(!isFinite(v)) v=0; return "₹"+Math.round(v).toLocaleString("en-IN"); }

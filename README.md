@@ -29,7 +29,7 @@ Niyam funds that discount; it does not reduce the partner payout.
 |---|---|---|
 | Trading fee | 4 bps on notional | **Unconfirmed** — see note below |
 | Discount to traders | 10% | Confirmed |
-| Partner commission share | 20% of gross | **Unconfirmed** for enterprise tier |
+| Partner commission share | 30% of gross | Enterprise / institutional tier |
 | Active trader rate | 60% | Assumption |
 | Round trips / trader / month | 20 | Assumption |
 | Average leverage | 10× | Assumption |
