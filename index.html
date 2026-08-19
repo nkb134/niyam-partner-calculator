@@ -152,8 +152,46 @@
   .actions{display:flex;gap:10px;flex-wrap:wrap;margin-top:18px}
   .btn{font:inherit;font-size:13px;font-weight:600;padding:10px 16px;border-radius:9px;cursor:pointer;border:1.5px solid var(--sky);background:var(--sky);color:#05081C}
   .btn.ghost{background:transparent;color:var(--sky)}
+
+  /* ---------- tabs ---------- */
+  [hidden]{display:none !important}
+  .tabs{display:flex;gap:4px;padding-top:26px;border-bottom:1px solid var(--line)}
+  .tab{
+    font:inherit;font-size:13px;font-weight:600;padding:11px 18px;border:0;background:transparent;
+    color:var(--dim);cursor:pointer;border-bottom:2px solid transparent;transition:.15s;margin-bottom:-1px
+  }
+  .tab:hover{color:var(--sky-soft)}
+  .tab[aria-selected=true]{color:var(--sky);border-bottom-color:var(--sky)}
+
+  /* ---------- rewards table ---------- */
+  .fxline{display:flex;align-items:center;gap:12px;flex-wrap:wrap;margin-bottom:22px;
+    padding-bottom:20px;border-bottom:1px solid var(--line-soft)}
+  .fxline label{margin:0;white-space:nowrap}
+  .tablewrap{overflow-x:auto;-webkit-overflow-scrolling:touch}
+  .rwd{width:100%;border-collapse:collapse;min-width:560px}
+  .rwd th{
+    text-align:right;font-size:10.5px;letter-spacing:.11em;text-transform:uppercase;
+    color:var(--dim);font-weight:600;padding:0 0 13px 16px;border-bottom:1px solid var(--line);vertical-align:bottom
+  }
+  .rwd th:first-child{text-align:left;padding-left:0}
+  .rwd td{
+    padding:17px 0 17px 16px;border-bottom:1px solid var(--line-soft);text-align:right;
+    font-family:"IBM Plex Mono",monospace;font-size:15px;font-weight:500;color:var(--head);
+    font-variant-numeric:tabular-nums;vertical-align:top;white-space:nowrap
+  }
+  .rwd td:first-child{text-align:left;padding-left:0}
+  .rwd tbody tr:last-child td{border-bottom:0}
+  .rwd td small{
+    display:block;font-family:Inter,-apple-system,sans-serif;font-size:10.5px;
+    font-weight:400;color:var(--dim);margin-top:4px;white-space:nowrap
+  }
+  .rwd .goal{font-size:20px;font-weight:600;color:var(--sky-soft);letter-spacing:-0.01em}
+  .rwd .rew{color:var(--gain)}
+  .rwd .pct{font-size:20px;font-weight:600;color:var(--gold);letter-spacing:-0.01em}
+
   @media print{
-    .actions,.presets,details.adv{display:none}
+    .actions,.presets,details.adv,.tabs{display:none}
+    [role=tabpanel][hidden]{display:block !important}
     body{background:#fff;color:#111}
     .masthead{background:#0A0F2E !important;-webkit-print-color-adjust:exact;print-color-adjust:exact}
     .logo-img{-webkit-print-color-adjust:exact;print-color-adjust:exact}
@@ -177,6 +215,13 @@
 </div>
 
 <div class="wrap">
+
+<div class="tabs" role="tablist" aria-label="Partner tools">
+  <button class="tab" type="button" role="tab" id="t-est" data-panel="p-est" aria-controls="p-est" aria-selected="true">Earnings estimator</button>
+  <button class="tab" type="button" role="tab" id="t-rwd" data-panel="p-rwd" aria-controls="p-rwd" aria-selected="false">Milestone rewards</button>
+</div>
+
+<section id="p-est" role="tabpanel" aria-labelledby="t-est">
 <div class="grid">
 
   <!-- ============ INPUTS ============ -->
@@ -367,6 +412,58 @@
   </div>
 
 </div>
+</section>
+
+<section id="p-rwd" role="tabpanel" aria-labelledby="t-rwd" hidden>
+  <div class="card" style="margin-top:22px">
+    <div class="card-hd">
+      <h2>Milestone rewards</h2>
+      <span class="note">Paid on top of your standard commission</span>
+    </div>
+    <div class="card-bd">
+      <p class="hint" style="margin:0 0 18px;max-width:62ch">
+        Reach a monthly trading volume goal across your book and you earn a milestone reward for
+        that month, <b style="color:var(--body)">in addition to</b> the standard commission you already receive.
+        Rewards stack on top of commission — they do not replace it.
+      </p>
+
+      <div class="fxline">
+        <label for="fx">Conversion rate</label>
+        <div class="inputline" style="max-width:210px">
+          <span class="affix">&#8377;</span>
+          <input type="number" id="fx" value="95" min="1" step="0.5">
+          <span class="affix suf">per $</span>
+        </div>
+        <span class="hint" style="margin:0">Goals are set in dollars; payouts are made in rupees.</span>
+      </div>
+
+      <div class="tablewrap">
+        <table class="rwd">
+          <thead>
+            <tr>
+              <th scope="col">Monthly Trading Goal</th>
+              <th scope="col">Standard Commissions</th>
+              <th scope="col">Milestone Reward</th>
+              <th scope="col">Total Commission<br><span style="text-transform:none;letter-spacing:0;font-weight:400">% of gross fees</span></th>
+            </tr>
+          </thead>
+          <tbody id="rwdbody"></tbody>
+        </table>
+      </div>
+
+      <div class="flag" style="margin-top:22px">
+        <span class="ic">&#9650;</span>
+        <div>
+          <b>Illustrative.</b> Standard commission is derived from the fee rate and commission share
+          set on the Earnings estimator tab — change either and this table updates. Milestone rewards
+          are fixed rupee amounts, paid for each calendar month in which the goal is met. Figures
+          exclude GST and are subject to applicable taxes, withholding and the partner agreement.
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
 </div>
 
 <script>
@@ -438,6 +535,8 @@
       labels.appendChild(s);
     });
     document.getElementById("o_year1").textContent = big(total);
+
+    rewards();
   }
 
   function clearPresets(){
@@ -457,6 +556,74 @@
     document.querySelector('[data-preset="base"]').setAttribute("aria-pressed","true");
     calc();
   });
+
+  /* ---------------- tabs ---------------- */
+  var tabs=[].slice.call(document.querySelectorAll(".tab"));
+  function selectTab(t){
+    tabs.forEach(function(o){
+      var on = (o===t);
+      o.setAttribute("aria-selected", on?"true":"false");
+      document.getElementById(o.getAttribute("data-panel")).hidden = !on;
+    });
+  }
+  tabs.forEach(function(t){
+    t.addEventListener("click",function(){ selectTab(t); });
+    t.addEventListener("keydown",function(e){
+      var i=tabs.indexOf(t), j=-1;
+      if(e.key==="ArrowRight") j=(i+1)%tabs.length;
+      if(e.key==="ArrowLeft")  j=(i-1+tabs.length)%tabs.length;
+      if(j>-1){ e.preventDefault(); selectTab(tabs[j]); tabs[j].focus(); }
+    });
+  });
+
+  /* ---------------- milestone rewards ---------------- */
+  // vol    : monthly trading volume goal, in USD
+  // reward : fixed milestone reward, in INR
+  var TIERS=[
+    {vol:1e6,  reward:2000},
+    {vol:1e7,  reward:35000},
+    {vol:5e7,  reward:350000}
+  ];
+  var fxEl=document.getElementById("fx");
+
+  function goal(v){ return "$"+(v/1e6)+"M"; }
+
+  function rewards(){
+    var fx=parseFloat(fxEl.value); if(!isFinite(fx)||fx<=0) fx=95;
+    var bps=n("bps")/10000, share=n("comm")/100;
+    var body=document.getElementById("rwdbody");
+    body.innerHTML="";
+
+    TIERS.forEach(function(t){
+      var gross = t.vol*bps*fx;          // gross fees on that volume, in INR
+      var std   = gross*share;           // standard commission
+      var total = std + t.reward;        // commission + milestone reward
+      var pct   = gross>0 ? total/gross*100 : 0;
+
+      var tr=document.createElement("tr");
+
+      var c1=document.createElement("td"); c1.className="goal";
+      c1.appendChild(document.createTextNode(goal(t.vol)));
+      var s1=document.createElement("small"); s1.textContent=big(t.vol*fx)+" notional"; c1.appendChild(s1);
+
+      var c2=document.createElement("td");
+      c2.appendChild(document.createTextNode(inr(std)));
+      var s2=document.createElement("small"); s2.textContent=n("comm")+"% of "+inr(gross)+" gross"; c2.appendChild(s2);
+
+      var c3=document.createElement("td"); c3.className="rew";
+      c3.appendChild(document.createTextNode("+"+inr(t.reward)));
+      var s3=document.createElement("small"); s3.textContent="fixed"; c3.appendChild(s3);
+
+      var c4=document.createElement("td"); c4.className="pct";
+      c4.appendChild(document.createTextNode(pct.toFixed(1)+"%"));
+      var s4=document.createElement("small"); s4.textContent=inr(total)+" / month"; c4.appendChild(s4);
+
+      tr.appendChild(c1); tr.appendChild(c2); tr.appendChild(c3); tr.appendChild(c4);
+      body.appendChild(tr);
+    });
+  }
+
+  fxEl.addEventListener("input",rewards);
 
   calc();
 })();
